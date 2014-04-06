@@ -43,6 +43,10 @@
 unsigned long arg_cpu_oc = 0;
 static int arg_vdd_uv = 0;
 
+int pvs_number = 0;
+module_param(pvs_number, int, 0755); 
+
+
 static int __init cpufreq_read_cpu_oc(char *cpu_oc)
 {
 	unsigned long ui_khz;
@@ -53,7 +57,7 @@ static int __init cpufreq_read_cpu_oc(char *cpu_oc)
 		arg_cpu_oc = 0;
 
 	arg_cpu_oc = ui_khz;
-	printk("elementalx: cpu_oc=%lu\n", arg_cpu_oc);
+	printk("skydragon: cpu_oc=%lu\n", arg_cpu_oc);
 	return 0;
 }
 __setup("cpu_oc=", cpufreq_read_cpu_oc);
@@ -69,7 +73,7 @@ static int __init cpufreq_read_vdd_uv(char *vdd_uv)
 		arg_vdd_uv = 0;
 
 	arg_vdd_uv = arg;
-	printk("elementalx: vdd_uv=%d\n", arg_vdd_uv);
+	printk("skydragon: vdd_uv=%d\n", arg_vdd_uv);
 	return 0;
 }
 __setup("vdd_uv=", cpufreq_read_vdd_uv);
@@ -516,6 +520,15 @@ static void get_krait_bin_format_b(struct platform_device *pdev,
 	
 	pte_efuse = readl_relaxed(base + 0x4) & BIT(21);
 	if (pte_efuse) {
+		//skydragon
+		pvs_number = *pvs;
+		if (arg_vdd_uv) {
+			new_pvs = *pvs;
+			if ((new_pvs + arg_vdd_uv) > 14) 
+				*pvs = 15;
+			else
+				*pvs = new_pvs + arg_vdd_uv;
+		}
 		dev_info(&pdev->dev, "PVS bin: %d\n", *pvs);
 	} else {
 		dev_warn(&pdev->dev, "PVS bin not set. Defaulting to 0!\n");
@@ -700,7 +713,7 @@ static void krait_update_freq(unsigned long *freq, int *uv, int *ua, int num, in
 {
 
 	if (speed == 3 && arg_cpu_oc <= 2457600) {
-		printk("elementalx: uv=%d freq=%lu ua=%d\n", uv[num-1], freq[num-1]/1000, ua[num-1]);
+		printk("skydragon: uv=%d freq=%lu ua=%d\n", uv[num-1], freq[num-1]/1000, ua[num-1]);
 		return;
 	}
 
@@ -734,7 +747,7 @@ static void krait_update_freq(unsigned long *freq, int *uv, int *ua, int num, in
 		break;
 	}
 
-	printk("elementalx: uv=%d freq=%lu ua=%d\n", uv[num-1], freq[num-1]/1000, ua[num-1]);
+	printk("skydragon: uv=%d freq=%lu ua=%d\n", uv[num-1], freq[num-1]/1000, ua[num-1]);
 }
 
 static char table_name[] = "qcom,speedXX-pvsXX-bin-vXX";
