@@ -2524,7 +2524,6 @@ void freeze_workqueues_begin(void)
                                 cwq = get_cwq(cpu, wq);
                         else
                                 continue;
-
 			if (cwq && wq->flags & WQ_FREEZABLE)
 				cwq->max_active = 0;
 		}
@@ -2552,7 +2551,6 @@ bool freeze_workqueues_busy(void)
                                 cwq = get_cwq(cpu, wq);
                         else
                                 continue;
-
 			if (!cwq || !(wq->flags & WQ_FREEZABLE))
 				continue;
 
