@@ -522,19 +522,11 @@ static void get_krait_bin_format_b(struct platform_device *pdev,
 	if (pte_efuse) {
 		//skydragon
 		pvs_number = *pvs;
-		if (arg_vdd_uv) {
-			new_pvs = *pvs;
-			if ((new_pvs + arg_vdd_uv) > 14) 
-				*pvs = 15;
-			else
-				*pvs = new_pvs + arg_vdd_uv;
-		}
 		dev_info(&pdev->dev, "PVS bin: %d\n", *pvs);
 	} else {
 		dev_warn(&pdev->dev, "PVS bin not set. Defaulting to 0!\n");
 		*pvs = 0;
 	}
-
 	dev_info(&pdev->dev, "PVS version: %d\n", *pvs_ver);
 
 	devm_iounmap(&pdev->dev, base);
